@@ -24,26 +24,52 @@ namespace Phone_Book_by_I_M_Marinov
 
         private void deleteButton_Click(object sender, EventArgs e)
         {
-            try
-            {
-                contactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex].Delete();
-            }
-            catch (Exception exception) 
-            {
-                Console.WriteLine("Not a valid row!");
-            }
 
+            if (contactsDataGrid.CurrentCell != null && contactsDataGrid.CurrentCell.RowIndex >= 0) 
+            {
+                try
+                {
+                    contactsTable.Rows.RemoveAt(contactsDataGrid.CurrentCell.RowIndex);
+                    contactsDataGrid.DataSource = contactsTable;
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine("Not a valid row!");
+                }
+            }
+            else
+            {
+                Console.WriteLine("No row was selected!");
+            }
             ClearAllEntries();
         }
 
         private void saveButton_Click(object sender, EventArgs e)
         {
+
+            if (string.IsNullOrWhiteSpace(firstNameTextBox.Text) ||
+                string.IsNullOrWhiteSpace(lastNameTextBox.Text) ||
+                string.IsNullOrWhiteSpace(phoneNumberTextBox.Text) ||
+                string.IsNullOrWhiteSpace(emailTextBox.Text))
+            {
+                MessageBox.Show("Please fill all the information before saving!");
+                return; 
+            }
+
             if (isEdited)
             {
-                contactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex]["First Name"] = firstNameTextBox.Text;
-                contactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex]["Last Name"] = lastNameTextBox.Text;
-                contactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex]["Phone Number"] = phoneNumberTextBox.Text;
-                contactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex]["Email"] = emailTextBox.Text;
+                if (contactsDataGrid.CurrentCell != null)
+                {
+                    contactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex]["First Name"] = firstNameTextBox.Text;
+                    contactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex]["Last Name"] = lastNameTextBox.Text;
+                    contactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex]["Phone Number"] = phoneNumberTextBox.Text;
+                    contactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex]["Email"] = emailTextBox.Text;
+                }
+                else
+                {
+                    MessageBox.Show("No row was selected!");
+                    return;
+                }
             }
             else
             {
@@ -54,6 +80,7 @@ namespace Phone_Book_by_I_M_Marinov
                     emailTextBox.Text
                     );
             }
+
             ClearAllEntries();
             isEdited = false;
         }

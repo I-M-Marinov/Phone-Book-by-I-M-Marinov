@@ -25,12 +25,30 @@ namespace Phone_Book_by_I_M_Marinov
         private void deleteButton_Click(object sender, EventArgs e)
         {
 
-            if (contactsDataGrid.CurrentCell != null && contactsDataGrid.CurrentCell.RowIndex >= 0) 
+            if (contactsDataGrid.CurrentCell != null && contactsDataGrid.CurrentCell.RowIndex >= 0)
             {
                 try
                 {
-                    contactsTable.Rows.RemoveAt(contactsDataGrid.CurrentCell.RowIndex);
+                    int rowIndex = contactsDataGrid.CurrentCell.RowIndex;
+                    contactsTable.Rows.RemoveAt(rowIndex);
                     contactsDataGrid.DataSource = contactsTable;
+
+                    // After deletion, check if there are any rows left in the table
+                    if (contactsTable.Rows.Count == 0)
+                    {
+                        ClearAllEntries();
+                        isEdited = false;
+                    }
+                    else
+                    {
+                        // Ensure the DataGridView shows the last row after deletion
+                        if (rowIndex >= contactsTable.Rows.Count)
+                        {
+                            rowIndex = contactsTable.Rows.Count - 1;
+                        }
+                        contactsDataGrid.CurrentCell = contactsDataGrid.Rows[rowIndex].Cells[0];
+                        contactsDataGrid.Rows[rowIndex].Selected = true;
+                    }
                 }
                 catch (Exception exception)
                 {
@@ -39,9 +57,8 @@ namespace Phone_Book_by_I_M_Marinov
             }
             else
             {
-                Console.WriteLine("No row was selected!");
+                MessageBox.Show("No row is selected!");
             }
-            ClearAllEntries();
         }
 
         private void saveButton_Click(object sender, EventArgs e)

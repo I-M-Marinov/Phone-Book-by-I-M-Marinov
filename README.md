@@ -16,28 +16,29 @@
 ## Design Diagram:
 
 <p align="center">
-<img src="./design-diagram-phone-book"/>
+<img src="./Phone-Book-by-I-M-Marinov/pictures/design-diagram-phone-book.png">
 </p>
 
 
 ## Features
-//TODO:
+//TO BE UPDATED:
 
 
 ## Screenshots: 
 
 <p align="center">
-<img src="./pictures/Phone-book-screenshot.png">
+<img src="./Phone-Book-by-I-M-Marinov/pictures/Phone-book-screenshot.PNG">
 </p>
 
 <p align="center">
-<img src="./Resume-CV-Screenshot.png">
+<img src="./Phone-Book-by-I-M-Marinov/pictures/contacts-excel.PNG">
 </p>
 
 
 ## Planned updates:
 
-- Responsive.css
+- Search
+- Data validation for the phone number field
   
 
 

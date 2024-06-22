@@ -1,15 +1,13 @@
 using OfficeOpenXml;
 using System.Data;
 
-
 namespace Phone_Book_by_I_M_Marinov
 {
     public partial class PhoneBook : Form
     {
-
-
         string excelFilePath = @"C:\Users\Marinov\Desktop\contacts.xlsx";
         DataTable contactsTable = new();
+        Dictionary<string, bool> contactsDictionary = new();
         bool isEdited;
         private int lastEntryIndex = -1;
 
@@ -17,7 +15,6 @@ namespace Phone_Book_by_I_M_Marinov
         {
             InitializeComponent();
         }
-
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -37,33 +34,41 @@ namespace Phone_Book_by_I_M_Marinov
 
         private void deleteButton_Click(object sender, EventArgs e)
         {
-
             if (contactsDataGrid.CurrentCell != null && contactsDataGrid.CurrentCell.RowIndex >= 0)
             {
-                try
-                {
-                    int rowIndex = contactsDataGrid.CurrentCell.RowIndex;
-                    contactsTable.Rows.RemoveAt(rowIndex);
-                    SaveContactsToExcel();
+                // Show confirmation dialog
+                DialogResult result = MessageBox.Show("Are you sure you want to delete this contact?", "Confirm Deletion", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 
-                    if (contactsTable.Rows.Count == 0)
-                    {
-                        ClearAllEntries();
-                        isEdited = false;
-                    }
-                    else
-                    {
-                        if (rowIndex >= contactsTable.Rows.Count)
-                        {
-                            rowIndex = contactsTable.Rows.Count - 1;
-                        }
-                        contactsDataGrid.CurrentCell = contactsDataGrid.Rows[rowIndex].Cells[0];
-                        contactsDataGrid.Rows[rowIndex].Selected = true;
-                    }
-                }
-                catch (Exception exception)
+                // If user clicks 'Yes', proceed with deletion
+                if (result == DialogResult.Yes)
                 {
-                    Console.WriteLine("Not a valid row!");
+                    try
+                    {
+                        int rowIndex = contactsDataGrid.CurrentCell.RowIndex;
+                        string entryKey = GenerateEntryKey(contactsTable.Rows[rowIndex]);
+                        contactsTable.Rows.RemoveAt(rowIndex);
+                        contactsDictionary.Remove(entryKey);
+                        SaveContactsToExcel();
+
+                        if (contactsTable.Rows.Count == 0)
+                        {
+                            ClearAllEntries();
+                            isEdited = false;
+                        }
+                        else
+                        {
+                            if (rowIndex >= contactsTable.Rows.Count)
+                            {
+                                rowIndex = contactsTable.Rows.Count - 1;
+                            }
+                            contactsDataGrid.CurrentCell = contactsDataGrid.Rows[rowIndex].Cells[0];
+                            contactsDataGrid.Rows[rowIndex].Selected = true;
+                        }
+                    }
+                    catch (Exception exception)
+                    {
+                        Console.WriteLine("Not a valid row!");
+                    }
                 }
             }
             else
@@ -74,7 +79,6 @@ namespace Phone_Book_by_I_M_Marinov
 
         private void saveButton_Click(object sender, EventArgs e)
         {
-
             if (string.IsNullOrWhiteSpace(firstNameTextBox.Text) ||
                 string.IsNullOrWhiteSpace(lastNameTextBox.Text) ||
                 string.IsNullOrWhiteSpace(phoneNumberTextBox.Text) ||
@@ -84,6 +88,8 @@ namespace Phone_Book_by_I_M_Marinov
                 return;
             }
 
+            string entryKey = GenerateEntryKey(firstNameTextBox.Text, lastNameTextBox.Text);
+
             if (isEdited)
             {
                 if (contactsDataGrid.CurrentCell != null)
@@ -92,6 +98,7 @@ namespace Phone_Book_by_I_M_Marinov
                     contactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex]["Last Name"] = lastNameTextBox.Text;
                     contactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex]["Phone Number"] = phoneNumberTextBox.Text;
                     contactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex]["Email"] = emailTextBox.Text;
+                    SaveContactsToExcel();
                 }
                 else
                 {
@@ -101,14 +108,15 @@ namespace Phone_Book_by_I_M_Marinov
             }
             else
             {
-                AddEntryToDataTable(
-                    firstNameTextBox.Text,
-                    lastNameTextBox.Text,
-                    phoneNumberTextBox.Text,
-                    emailTextBox.Text
-                    );
-
-                SaveContactsToExcel();
+                if (contactsDictionary.ContainsKey(entryKey))
+                {
+                    MessageBox.Show("This entry already exists in the phone book.");
+                }
+                else
+                {
+                    AddEntryToDataTable(firstNameTextBox.Text, lastNameTextBox.Text, phoneNumberTextBox.Text, emailTextBox.Text);
+                    SaveContactsToExcel();
+                }
             }
 
             ClearAllEntries();
@@ -151,7 +159,6 @@ namespace Phone_Book_by_I_M_Marinov
                 emailTextBox.Text = contactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex].ItemArray[3].ToString();
                 isEdited = true;
             }
-
         }
 
         private void ClearAllEntries()
@@ -161,7 +168,6 @@ namespace Phone_Book_by_I_M_Marinov
             phoneNumberTextBox.Text = "";
             emailTextBox.Text = "";
         }
-
 
         private void LoadContactsFromExcel()
         {
@@ -175,12 +181,17 @@ namespace Phone_Book_by_I_M_Marinov
 
                     for (int row = 2; row <= rowCount; row++)
                     {
-                        contactsTable.Rows.Add(
-                            worksheet.Cells[row, 1].Value?.ToString(),
-                            worksheet.Cells[row, 2].Value?.ToString(),
-                            worksheet.Cells[row, 3].Value?.ToString(),
-                            worksheet.Cells[row, 4].Value?.ToString()
-                        );
+                        string firstName = worksheet.Cells[row, 1].Value?.ToString();
+                        string lastName = worksheet.Cells[row, 2].Value?.ToString();
+                        string phoneNumber = worksheet.Cells[row, 3].Value?.ToString();
+                        string email = worksheet.Cells[row, 4].Value?.ToString();
+
+                        contactsTable.Rows.Add(firstName, lastName, phoneNumber, email);
+                        string entryKey = GenerateEntryKey(firstName, lastName);
+                        if (!contactsDictionary.ContainsKey(entryKey))
+                        {
+                            contactsDictionary.Add(entryKey, true);
+                        }
                     }
                 }
             }
@@ -228,7 +239,22 @@ namespace Phone_Book_by_I_M_Marinov
         private void AddEntryToDataTable(string firstName, string lastName, string phoneNumber, string email)
         {
             contactsTable.Rows.Add(firstName, lastName, phoneNumber, email);
+            string entryKey = GenerateEntryKey(firstName, lastName);
+            if (!contactsDictionary.ContainsKey(entryKey))
+            {
+                contactsDictionary.Add(entryKey, true);
+            }
             lastEntryIndex = contactsTable.Rows.Count - 1;
+        }
+
+        private string GenerateEntryKey(DataRow row)
+        {
+            return $"{row["First Name"]?.ToString().ToLower()}-{row["Last Name"]?.ToString().ToLower()}";
+        }
+
+        private string GenerateEntryKey(string firstName, string lastName)
+        {
+            return $"{firstName?.ToLower()}-{lastName?.ToLower()}";
         }
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)

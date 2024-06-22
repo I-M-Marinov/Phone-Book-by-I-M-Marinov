@@ -28,7 +28,9 @@
 - Delete - Deletes an entry from the DataGrid View in the application and in the database ( Excel spreadsheet ).
 - Adjustable file path for the Contacts Excel file. Just go in and change the string **excelFilePath = @"C:\Users\Marinov\Desktop\contacts.xlsx"**
 
-
+## Updates
+- Program now checks for duplicate contacts ( only by First and Last Name, so it let's the user add a second number or email for instance for the same person under a different name )
+- The delete button would no longer delete immediately a contact. Extra validation added, so the user can avoid accidently deleting contacts from the list. 
 
 ## Screenshots: 
 

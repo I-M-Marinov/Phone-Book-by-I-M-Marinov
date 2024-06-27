@@ -70,7 +70,7 @@
             // firstNameTextBox
             // 
             firstNameTextBox.Cursor = Cursors.IBeam;
-            firstNameTextBox.Location = new Point(342, 20);
+            firstNameTextBox.Location = new Point(342, 39);
             firstNameTextBox.Margin = new Padding(2);
             firstNameTextBox.Name = "firstNameTextBox";
             firstNameTextBox.Size = new Size(360, 23);
@@ -79,7 +79,7 @@
             // firstNameLabel
             // 
             firstNameLabel.Font = new Font("Segoe UI", 11F, FontStyle.Regular, GraphicsUnit.Point);
-            firstNameLabel.Location = new Point(253, 24);
+            firstNameLabel.Location = new Point(253, 43);
             firstNameLabel.Margin = new Padding(2, 0, 2, 0);
             firstNameLabel.Name = "firstNameLabel";
             firstNameLabel.Size = new Size(85, 19);
@@ -89,7 +89,7 @@
             // lastNameLabel
             // 
             lastNameLabel.Font = new Font("Segoe UI", 11F, FontStyle.Regular, GraphicsUnit.Point);
-            lastNameLabel.Location = new Point(253, 61);
+            lastNameLabel.Location = new Point(253, 80);
             lastNameLabel.Margin = new Padding(2, 0, 2, 0);
             lastNameLabel.Name = "lastNameLabel";
             lastNameLabel.Size = new Size(85, 19);
@@ -100,7 +100,7 @@
             // 
             lastNameTextBox.Cursor = Cursors.IBeam;
             lastNameTextBox.ForeColor = SystemColors.WindowText;
-            lastNameTextBox.Location = new Point(342, 57);
+            lastNameTextBox.Location = new Point(342, 76);
             lastNameTextBox.Margin = new Padding(2);
             lastNameTextBox.Name = "lastNameTextBox";
             lastNameTextBox.Size = new Size(360, 23);
@@ -110,7 +110,7 @@
             // 
             phoneNumberTextBox.Cursor = Cursors.IBeam;
             phoneNumberTextBox.ForeColor = SystemColors.WindowText;
-            phoneNumberTextBox.Location = new Point(342, 91);
+            phoneNumberTextBox.Location = new Point(342, 110);
             phoneNumberTextBox.Margin = new Padding(2);
             phoneNumberTextBox.Name = "phoneNumberTextBox";
             phoneNumberTextBox.Size = new Size(360, 23);
@@ -119,7 +119,7 @@
             // phoneNumberLabel
             // 
             phoneNumberLabel.Font = new Font("Segoe UI", 11F, FontStyle.Regular, GraphicsUnit.Point);
-            phoneNumberLabel.Location = new Point(222, 95);
+            phoneNumberLabel.Location = new Point(222, 114);
             phoneNumberLabel.Margin = new Padding(2, 0, 2, 0);
             phoneNumberLabel.Name = "phoneNumberLabel";
             phoneNumberLabel.Size = new Size(116, 19);
@@ -180,7 +180,7 @@
             // 
             emailTextBox.Cursor = Cursors.IBeam;
             emailTextBox.ForeColor = SystemColors.WindowText;
-            emailTextBox.Location = new Point(342, 129);
+            emailTextBox.Location = new Point(342, 148);
             emailTextBox.Margin = new Padding(2);
             emailTextBox.Name = "emailTextBox";
             emailTextBox.Size = new Size(360, 23);
@@ -189,7 +189,7 @@
             // emailLabel
             // 
             emailLabel.Font = new Font("Segoe UI", 11F, FontStyle.Regular, GraphicsUnit.Point);
-            emailLabel.Location = new Point(279, 133);
+            emailLabel.Location = new Point(279, 152);
             emailLabel.Margin = new Padding(2, 0, 2, 0);
             emailLabel.Name = "emailLabel";
             emailLabel.Size = new Size(50, 19);
@@ -222,7 +222,7 @@
             linkLabel1.AutoSize = true;
             linkLabel1.Cursor = Cursors.Hand;
             linkLabel1.LinkColor = Color.SteelBlue;
-            linkLabel1.Location = new Point(785, 173);
+            linkLabel1.Location = new Point(749, 196);
             linkLabel1.Name = "linkLabel1";
             linkLabel1.Size = new Size(159, 15);
             linkLabel1.TabIndex = 13;
@@ -234,7 +234,7 @@
             // 
             pictureBox1.Cursor = Cursors.Hand;
             pictureBox1.Image = (Image)resources.GetObject("pictureBox1.Image");
-            pictureBox1.Location = new Point(800, 41);
+            pictureBox1.Location = new Point(764, 64);
             pictureBox1.Name = "pictureBox1";
             pictureBox1.Size = new Size(131, 129);
             pictureBox1.SizeMode = PictureBoxSizeMode.StretchImage;

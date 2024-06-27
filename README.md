@@ -54,6 +54,7 @@
 
 ## Planned updates:
 
+- Implement a way for the user to choose where the "Contacts" spreadsheet is saved 
 - Data validation for the phone number field
 - Data validation for the email field
   

@@ -1,11 +1,13 @@
 using OfficeOpenXml;
 using System.Data;
+using System.Drawing.Text;
 
 namespace Phone_Book_by_I_M_Marinov
 {
     public partial class PhoneBook : Form
     {
-        string excelFilePath = @"C:\Users\Marinov\Desktop\contacts.xlsx";
+
+        string excelFilePath = @"C:\Users\Marinov\Desktop\Contacts.xlsx";
         DataTable contactsTable = new();
         Dictionary<string, bool> contactsDictionary = new();
         bool isEdited;
@@ -14,6 +16,7 @@ namespace Phone_Book_by_I_M_Marinov
         public PhoneBook()
         {
             InitializeComponent();
+            searchTextBox.TextChanged += SearchTextBox_TextChanges;
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -36,8 +39,12 @@ namespace Phone_Book_by_I_M_Marinov
         {
             if (contactsDataGrid.CurrentCell != null && contactsDataGrid.CurrentCell.RowIndex >= 0)
             {
+                string nameCellValue = GetFirstCellValue();
+                string lastNameCellValue = GetSecondCellValue();
+
+
                 // Show confirmation dialog
-                DialogResult result = MessageBox.Show("Are you sure you want to delete this contact?", "Confirm Deletion", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                DialogResult result = MessageBox.Show($"Are you sure you want to delete {nameCellValue} {lastNameCellValue} ?", "Confirm Deletion", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 
                 // If user clicks 'Yes', proceed with deletion
                 if (result == DialogResult.Yes)
@@ -64,12 +71,14 @@ namespace Phone_Book_by_I_M_Marinov
                             contactsDataGrid.CurrentCell = contactsDataGrid.Rows[rowIndex].Cells[0];
                             contactsDataGrid.Rows[rowIndex].Selected = true;
                         }
+
                     }
                     catch (Exception exception)
                     {
-                        Console.WriteLine("Not a valid row!");
+                        MessageBox.Show("Not a valid row!");
                     }
                 }
+
             }
             else
             {
@@ -110,7 +119,7 @@ namespace Phone_Book_by_I_M_Marinov
             {
                 if (contactsDictionary.ContainsKey(entryKey))
                 {
-                    MessageBox.Show("This entry already exists in the phone book.");
+                    MessageBox.Show($"{firstNameTextBox.Text} {lastNameTextBox.Text} already exists in the phone book.");
                 }
                 else
                 {
@@ -171,27 +180,42 @@ namespace Phone_Book_by_I_M_Marinov
 
         private void LoadContactsFromExcel()
         {
-            if (File.Exists(excelFilePath))
+            if (!File.Exists(excelFilePath))
             {
+                // Create a new Excel file if it does not exist
+
                 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-                using (ExcelPackage package = new ExcelPackage(new FileInfo(excelFilePath)))
+                using (ExcelPackage package = new ExcelPackage())
                 {
-                    ExcelWorksheet worksheet = package.Workbook.Worksheets["Contacts"];
-                    int rowCount = worksheet.Dimension.Rows;
+                    ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("Contacts");
 
-                    for (int row = 2; row <= rowCount; row++)
+                    worksheet.Cells[1, 1].Value = "First Name";
+                    worksheet.Cells[1, 2].Value = "Last Name";
+                    worksheet.Cells[1, 3].Value = "Phone Number";
+                    worksheet.Cells[1, 4].Value = "Email";
+
+                    package.SaveAs(new FileInfo(excelFilePath));
+                }
+            }
+            
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            using (ExcelPackage package = new ExcelPackage(new FileInfo(excelFilePath)))
+            {
+                ExcelWorksheet worksheet = package.Workbook.Worksheets["Contacts"];
+                int rowCount = worksheet.Dimension.Rows;
+
+                for (int row = 2; row <= rowCount; row++)
+                {
+                    string firstName = worksheet.Cells[row, 1].Value?.ToString();
+                    string lastName = worksheet.Cells[row, 2].Value?.ToString();
+                    string phoneNumber = worksheet.Cells[row, 3].Value?.ToString();
+                    string email = worksheet.Cells[row, 4].Value?.ToString();
+
+                    contactsTable.Rows.Add(firstName, lastName, phoneNumber, email);
+                    string entryKey = GenerateEntryKey(firstName, lastName);
+                    if (!contactsDictionary.ContainsKey(entryKey))
                     {
-                        string firstName = worksheet.Cells[row, 1].Value?.ToString();
-                        string lastName = worksheet.Cells[row, 2].Value?.ToString();
-                        string phoneNumber = worksheet.Cells[row, 3].Value?.ToString();
-                        string email = worksheet.Cells[row, 4].Value?.ToString();
-
-                        contactsTable.Rows.Add(firstName, lastName, phoneNumber, email);
-                        string entryKey = GenerateEntryKey(firstName, lastName);
-                        if (!contactsDictionary.ContainsKey(entryKey))
-                        {
-                            contactsDictionary.Add(entryKey, true);
-                        }
+                        contactsDictionary.Add(entryKey, true);
                     }
                 }
             }
@@ -254,7 +278,7 @@ namespace Phone_Book_by_I_M_Marinov
 
         private string GenerateEntryKey(string firstName, string lastName)
         {
-            return $"{firstName?.ToLower()}-{lastName?.ToLower()}";
+            return $"{firstName?.ToLower()} {lastName?.ToLower()}";
         }
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -283,6 +307,62 @@ namespace Phone_Book_by_I_M_Marinov
             {
                 MessageBox.Show("Error opening link: " + ex.Message);
             }
+        }
+
+        private void SearchTextBox_TextChanges(object sender, EventArgs e)
+        {
+            string searchString = searchTextBox.Text.ToLower(); // Get the search string, convert it to lower case ( so the search is not case-sensitive )
+
+            if (string.IsNullOrWhiteSpace(searchString))
+            {
+                contactsDataGrid.DataSource = contactsTable; // Reset the data source to the original contactsTable
+                deleteButton.Enabled = true; // Enable the delete button if the searchTextBox is IsNullOrWhiteSpace
+            }
+            else
+            {
+                DataTable filteredTable = contactsTable.Clone(); // Create a clone of the contactsTable 
+
+                foreach (DataRow row in contactsTable.Rows) // Iterate over all the Rows of the contactsTable to look for matches to the searchString
+                {
+                    if (row["First Name"].ToString().ToLower().Contains(searchString))
+                    {
+                        filteredTable.ImportRow(row); // Import matching rows to the filtered table
+                    }
+                }
+
+                contactsDataGrid.DataSource = filteredTable; // Visualize the filtered table to the DataGridView
+                deleteButton.Enabled = false; // Disable the delete button while searching
+            }
+        }
+
+        private string GetFirstCellValue()
+        {
+            // Get the current cell's row index and column index
+            int rowIndex = contactsDataGrid.CurrentCell.RowIndex;
+            int colIndex = contactsDataGrid.CurrentCell.ColumnIndex;
+
+            string currentCellValue = contactsDataGrid.Rows[rowIndex].Cells[colIndex].EditedFormattedValue.ToString();
+
+
+            return currentCellValue;
+        }
+
+        private string GetSecondCellValue()
+        {
+            int rowIndex = contactsDataGrid.CurrentCell.RowIndex;
+            int colIndex = contactsDataGrid.CurrentCell.ColumnIndex;
+
+            string nextCellValue = "";
+
+            DataGridViewCell nextCell = contactsDataGrid.Rows[rowIndex].Cells[colIndex].OwningRow.Cells.Cast<DataGridViewCell>()
+                .FirstOrDefault(c => c.Visible && c.ColumnIndex > colIndex);
+
+            if (nextCell != null)
+            {
+                nextCellValue = nextCell.EditedFormattedValue.ToString();
+            }
+
+            return nextCellValue;
         }
     }
 }

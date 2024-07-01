@@ -11,6 +11,7 @@ namespace Phone_Book_by_I_M_Marinov
         bool isEdited;
         private int lastEntryIndex = -1;
         private readonly ExcelControlMethods _excel;
+        private readonly UtilityMethods utilityMethod;
 
 
         public PhoneBook()
@@ -26,22 +27,58 @@ namespace Phone_Book_by_I_M_Marinov
             _excel.LoadContactsFromExcel();
         }
 
+        public DataGridView ContactsDataGrid
+        {
+            get { return contactsDataGrid; }
+            set { contactsDataGrid = value; }
+        }
+        public TextBox FirstNameTextBox
+        {
+            get { return firstNameTextBox; }
+            set { firstNameTextBox = value; }
+        }
+        public TextBox LastNameTextBox
+        {
+            get { return lastNameTextBox; }
+            set { lastNameTextBox = value; }
+        }
+        public TextBox PhoneNumberTextBox
+        {
+            get { return phoneNumberTextBox; }
+            set { phoneNumberTextBox = value; }
+        }
+        public TextBox EmailTextBox
+        {
+            get { return emailTextBox; }
+            set { emailTextBox = value; }
+        }
+        public TextBox SearchTextBox
+        {
+            get { return searchTextBox; }
+            set { searchTextBox = value; }
+        }
+        public Button DeleteButton
+        {
+            get { return deleteButton; }
+            set { deleteButton = value; }
+        }
+
         private void InitializeContactsTable()
         {
-            _excel.contactsTable.Columns.Add("First Name");
-            _excel.contactsTable.Columns.Add("Last Name");
-            _excel.contactsTable.Columns.Add("Phone Number");
-            _excel.contactsTable.Columns.Add("Email");
+            _excel.ContactsTable.Columns.Add("First Name");
+            _excel.ContactsTable.Columns.Add("Last Name");
+            _excel.ContactsTable.Columns.Add("Phone Number");
+            _excel.ContactsTable.Columns.Add("Email");
 
-            contactsDataGrid.DataSource = _excel.contactsTable;
+            contactsDataGrid.DataSource = _excel.ContactsTable;
         }
 
         private void deleteButton_Click(object sender, EventArgs e)
         {
             if (contactsDataGrid.CurrentCell != null && contactsDataGrid.CurrentCell.RowIndex >= 0)
             {
-                string nameCellValue = GetFirstCellValue();
-                string lastNameCellValue = GetSecondCellValue();
+                string nameCellValue = utilityMethod.GetFirstCellValue();
+                string lastNameCellValue = utilityMethod.GetSecondCellValue();
 
 
                 // Show confirmation dialog
@@ -53,21 +90,21 @@ namespace Phone_Book_by_I_M_Marinov
                     try
                     {
                         int rowIndex = contactsDataGrid.CurrentCell.RowIndex;
-                        string entryKey = _excel.GenerateEntryKey(_excel.contactsTable.Rows[rowIndex]);
-                        _excel.contactsTable.Rows.RemoveAt(rowIndex);
-                        _excel.contactsDictionary.Remove(entryKey);
+                        string entryKey = _excel.GenerateEntryKey(_excel.ContactsTable.Rows[rowIndex]);
+                        _excel.ContactsTable.Rows.RemoveAt(rowIndex);
+                        _excel.ContactsDictionary.Remove(entryKey);
                         _excel.SaveContactsToExcel();
 
-                        if (_excel.contactsTable.Rows.Count == 0)
+                        if (_excel.ContactsTable.Rows.Count == 0)
                         {
-                            ClearAllEntries();
+                            utilityMethod.ClearAllEntries();
                             isEdited = false;
                         }
                         else
                         {
-                            if (rowIndex >= _excel.contactsTable.Rows.Count)
+                            if (rowIndex >= _excel.ContactsTable.Rows.Count)
                             {
-                                rowIndex = _excel.contactsTable.Rows.Count - 1;
+                                rowIndex = _excel.ContactsTable.Rows.Count - 1;
                             }
                             contactsDataGrid.CurrentCell = contactsDataGrid.Rows[rowIndex].Cells[0];
                             contactsDataGrid.Rows[rowIndex].Selected = true;
@@ -104,10 +141,10 @@ namespace Phone_Book_by_I_M_Marinov
             {
                 if (contactsDataGrid.CurrentCell != null)
                 {
-                    _excel.contactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex]["First Name"] = firstNameTextBox.Text;
-                    _excel.contactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex]["Last Name"] = lastNameTextBox.Text;
-                    _excel.contactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex]["Phone Number"] = phoneNumberTextBox.Text;
-                    _excel.contactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex]["Email"] = emailTextBox.Text;
+                    _excel.ContactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex]["First Name"] = firstNameTextBox.Text;
+                    _excel.ContactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex]["Last Name"] = lastNameTextBox.Text;
+                    _excel.ContactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex]["Phone Number"] = phoneNumberTextBox.Text;
+                    _excel.ContactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex]["Email"] = emailTextBox.Text;
                     _excel.SaveContactsToExcel();
                 }
                 else
@@ -118,7 +155,7 @@ namespace Phone_Book_by_I_M_Marinov
             }
             else
             {
-                if (_excel.contactsDictionary.ContainsKey(entryKey))
+                if (_excel.ContactsDictionary.ContainsKey(entryKey))
                 {
                     MessageBox.Show($"{firstNameTextBox.Text} {lastNameTextBox.Text} already exists in the phone book.");
                 }
@@ -129,7 +166,7 @@ namespace Phone_Book_by_I_M_Marinov
                 }
             }
 
-            ClearAllEntries();
+            utilityMethod.ClearAllEntries();
             isEdited = false;
         }
 
@@ -139,58 +176,48 @@ namespace Phone_Book_by_I_M_Marinov
             {
                 int rowIndex = contactsDataGrid.CurrentCell.RowIndex;
 
-                if (rowIndex < _excel.contactsTable.Rows.Count)
+                if (rowIndex < _excel.ContactsTable.Rows.Count)
                 {
-                    firstNameTextBox.Text = _excel.contactsTable.Rows[rowIndex].ItemArray[0].ToString();
-                    lastNameTextBox.Text = _excel.contactsTable.Rows[rowIndex].ItemArray[1].ToString();
-                    phoneNumberTextBox.Text = _excel.contactsTable.Rows[rowIndex].ItemArray[2].ToString();
-                    emailTextBox.Text = _excel.contactsTable.Rows[rowIndex].ItemArray[3].ToString();
+                    firstNameTextBox.Text = _excel.ContactsTable.Rows[rowIndex].ItemArray[0].ToString();
+                    lastNameTextBox.Text = _excel.ContactsTable.Rows[rowIndex].ItemArray[1].ToString();
+                    phoneNumberTextBox.Text = _excel.ContactsTable.Rows[rowIndex].ItemArray[2].ToString();
+                    emailTextBox.Text = _excel.ContactsTable.Rows[rowIndex].ItemArray[3].ToString();
                     isEdited = true;
                 }
                 else
                 {
-                    ClearAllEntries();
+                    utilityMethod.ClearAllEntries();
                 }
             }
         }
 
         private void newEntryButton_Click(object sender, EventArgs e)
         {
-            ClearAllEntries();
+            utilityMethod.ClearAllEntries();
         }
 
         private void contactsDataGrid_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
             if (contactsDataGrid.CurrentCell != null && lastEntryIndex == contactsDataGrid.CurrentCell.RowIndex + 1)
             {
-                firstNameTextBox.Text = _excel.contactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex].ItemArray[0].ToString();
-                lastNameTextBox.Text = _excel.contactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex].ItemArray[1].ToString();
-                phoneNumberTextBox.Text = _excel.contactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex].ItemArray[2].ToString();
-                emailTextBox.Text = _excel.contactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex].ItemArray[3].ToString();
+                firstNameTextBox.Text = _excel.ContactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex].ItemArray[0].ToString();
+                lastNameTextBox.Text = _excel.ContactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex].ItemArray[1].ToString();
+                phoneNumberTextBox.Text = _excel.ContactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex].ItemArray[2].ToString();
+                emailTextBox.Text = _excel.ContactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex].ItemArray[3].ToString();
                 isEdited = true;
             }
         }
 
-        private void ClearAllEntries()
-        {
-            firstNameTextBox.Text = "";
-            lastNameTextBox.Text = "";
-            phoneNumberTextBox.Text = "";
-            emailTextBox.Text = "";
-        }
-
         private void AddEntryToDataTable(string firstName, string lastName, string phoneNumber, string email)
         {
-            _excel.contactsTable.Rows.Add(firstName, lastName, phoneNumber, email);
+            _excel.ContactsTable.Rows.Add(firstName, lastName, phoneNumber, email);
             string entryKey = _excel.GenerateEntryKey(firstName, lastName);
-            if (!_excel.contactsDictionary.ContainsKey(entryKey))
+            if (!_excel.ContactsDictionary.ContainsKey(entryKey))
             {
-                _excel.contactsDictionary.Add(entryKey, true);
+                _excel.ContactsDictionary.Add(entryKey, true);
             }
-            lastEntryIndex = _excel.contactsTable.Rows.Count - 1;
+            lastEntryIndex = _excel.ContactsTable.Rows.Count - 1;
         }
-
-
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
@@ -226,14 +253,14 @@ namespace Phone_Book_by_I_M_Marinov
 
             if (string.IsNullOrWhiteSpace(searchString))
             {
-                contactsDataGrid.DataSource = _excel.contactsTable; // Reset the data source to the original contactsTable
+                contactsDataGrid.DataSource = _excel.ContactsTable; // Reset the data source to the original ContactsTable
                 deleteButton.Enabled = true; // Enable the delete button if the searchTextBox is IsNullOrWhiteSpace
             }
             else
             {
-                DataTable filteredTable = _excel.contactsTable.Clone(); // Create a clone of the contactsTable 
+                DataTable filteredTable = _excel.ContactsTable.Clone(); // Create a clone of the ContactsTable 
 
-                foreach (DataRow row in _excel.contactsTable.Rows) // Iterate over all the Rows of the contactsTable to look for matches to the searchString
+                foreach (DataRow row in _excel.ContactsTable.Rows) // Iterate over all the Rows of the ContactsTable to look for matches to the searchString
                 {
                     if (row["First Name"].ToString().ToLower().Contains(searchString))
                     {
@@ -246,34 +273,6 @@ namespace Phone_Book_by_I_M_Marinov
             }
         }
 
-        private string GetFirstCellValue()
-        {
-            // Get the current cell's row index and column index
-            int rowIndex = contactsDataGrid.CurrentCell.RowIndex;
-            int colIndex = contactsDataGrid.CurrentCell.ColumnIndex;
 
-            string currentCellValue = contactsDataGrid.Rows[rowIndex].Cells[colIndex].EditedFormattedValue.ToString();
-
-
-            return currentCellValue;
-        }
-
-        private string GetSecondCellValue()
-        {
-            int rowIndex = contactsDataGrid.CurrentCell.RowIndex;
-            int colIndex = contactsDataGrid.CurrentCell.ColumnIndex;
-
-            string nextCellValue = "";
-
-            DataGridViewCell nextCell = contactsDataGrid.Rows[rowIndex].Cells[colIndex].OwningRow.Cells.Cast<DataGridViewCell>()
-                .FirstOrDefault(c => c.Visible && c.ColumnIndex > colIndex);
-
-            if (nextCell != null)
-            {
-                nextCellValue = nextCell.EditedFormattedValue.ToString();
-            }
-
-            return nextCellValue;
-        }
     }
 }

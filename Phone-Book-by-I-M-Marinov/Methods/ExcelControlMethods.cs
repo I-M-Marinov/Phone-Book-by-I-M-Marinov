@@ -11,11 +11,9 @@ namespace Phone_Book_by_I_M_Marinov.Methods
     public class ExcelControlMethods
     {
 
-        string excelFilePath = @"C:\Users\Marinov\Desktop\Contacts.xlsx";
-        public DataTable contactsTable = new();
-        public Dictionary<string, bool> contactsDictionary = new();
-
-
+        private readonly string _excelFilePath = @"C:\Users\Marinov\Desktop\Contacts.xlsx";
+        public DataTable ContactsTable = new();
+        public Dictionary<string, bool> ContactsDictionary = new();
         private readonly PhoneBook _phoneBook;
 
         public ExcelControlMethods(PhoneBook phoneBook)
@@ -25,10 +23,8 @@ namespace Phone_Book_by_I_M_Marinov.Methods
 
         public void LoadContactsFromExcel()
         {
-            if (!File.Exists(excelFilePath))
+            if (!File.Exists(_excelFilePath)) // Create a new Excel file if it does not exist
             {
-                // Create a new Excel file if it does not exist
-
                 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
                 using (ExcelPackage package = new ExcelPackage())
                 {
@@ -39,12 +35,12 @@ namespace Phone_Book_by_I_M_Marinov.Methods
                     worksheet.Cells[1, 3].Value = "Phone Number";
                     worksheet.Cells[1, 4].Value = "Email";
 
-                    package.SaveAs(new FileInfo(excelFilePath));
+                    package.SaveAs(new FileInfo(_excelFilePath));
                 }
             }
 
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-            using (ExcelPackage package = new ExcelPackage(new FileInfo(excelFilePath)))
+            using (ExcelPackage package = new ExcelPackage(new FileInfo(_excelFilePath)))
             {
                 ExcelWorksheet worksheet = package.Workbook.Worksheets["Contacts"];
                 int rowCount = worksheet.Dimension.Rows;
@@ -56,11 +52,11 @@ namespace Phone_Book_by_I_M_Marinov.Methods
                     string phoneNumber = worksheet.Cells[row, 3].Value?.ToString();
                     string email = worksheet.Cells[row, 4].Value?.ToString();
 
-                    contactsTable.Rows.Add(firstName, lastName, phoneNumber, email);
+                    ContactsTable.Rows.Add(firstName, lastName, phoneNumber, email);
                     string entryKey = GenerateEntryKey(firstName, lastName);
-                    if (!contactsDictionary.ContainsKey(entryKey))
+                    if (!ContactsDictionary.ContainsKey(entryKey))
                     {
-                        contactsDictionary.Add(entryKey, true);
+                        ContactsDictionary.Add(entryKey, true);
                     }
                 }
             }
@@ -68,13 +64,13 @@ namespace Phone_Book_by_I_M_Marinov.Methods
 
         public void SaveContactsToExcel()
         {
-            if (File.Exists(excelFilePath))
+            if (File.Exists(_excelFilePath))
             {
-                using (ExcelPackage package = new ExcelPackage(new FileInfo(excelFilePath)))
+                using (ExcelPackage package = new ExcelPackage(new FileInfo(_excelFilePath)))
                 {
                     ExcelWorksheet worksheet = package.Workbook.Worksheets["Contacts"];
 
-                    if (contactsTable.Rows.Count > 0)
+                    if (ContactsTable.Rows.Count > 0)
                     {
                         if (worksheet.Dimension?.Rows > 1 && worksheet.Dimension?.Columns > 0)
                         {
@@ -82,7 +78,7 @@ namespace Phone_Book_by_I_M_Marinov.Methods
                         }
 
                         int rowIndex = 2;
-                        foreach (DataRow row in contactsTable.Rows)
+                        foreach (DataRow row in ContactsTable.Rows)
                         {
                             if (row.RowState != DataRowState.Deleted)
                             {
@@ -95,7 +91,7 @@ namespace Phone_Book_by_I_M_Marinov.Methods
                         }
                     }
 
-                    if (contactsTable.Rows.Count == 0)
+                    if (ContactsTable.Rows.Count == 0)
                     {
                         worksheet.Cells["A2:D" + worksheet.Dimension.End.Row].Clear();
                     }

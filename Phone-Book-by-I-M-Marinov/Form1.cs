@@ -12,6 +12,7 @@ namespace Phone_Book_by_I_M_Marinov
         private int lastEntryIndex = -1;
         private readonly ExcelControlMethods _excel;
         private readonly UtilityMethods utilityMethod;
+        private readonly Search search;
 
 
         public PhoneBook()
@@ -19,6 +20,7 @@ namespace Phone_Book_by_I_M_Marinov
             InitializeComponent();
             searchTextBox.TextChanged += SearchTextBox_TextChanges;
             _excel = new ExcelControlMethods(this);
+            search = 
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -247,31 +249,6 @@ namespace Phone_Book_by_I_M_Marinov
             }
         }
 
-        private void SearchTextBox_TextChanges(object sender, EventArgs e)
-        {
-            string searchString = searchTextBox.Text.ToLower(); // Get the search string, convert it to lower case ( so the search is not case-sensitive )
-
-            if (string.IsNullOrWhiteSpace(searchString))
-            {
-                contactsDataGrid.DataSource = _excel.ContactsTable; // Reset the data source to the original ContactsTable
-                deleteButton.Enabled = true; // Enable the delete button if the searchTextBox is IsNullOrWhiteSpace
-            }
-            else
-            {
-                DataTable filteredTable = _excel.ContactsTable.Clone(); // Create a clone of the ContactsTable 
-
-                foreach (DataRow row in _excel.ContactsTable.Rows) // Iterate over all the Rows of the ContactsTable to look for matches to the searchString
-                {
-                    if (row["First Name"].ToString().ToLower().Contains(searchString))
-                    {
-                        filteredTable.ImportRow(row); // Import matching rows to the filtered table
-                    }
-                }
-
-                contactsDataGrid.DataSource = filteredTable; // Visualize the filtered table to the DataGridView
-                deleteButton.Enabled = false; // Disable the delete button while searching
-            }
-        }
 
 
     }

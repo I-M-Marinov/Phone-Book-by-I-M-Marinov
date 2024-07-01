@@ -11,13 +11,11 @@ namespace Phone_Book_by_I_M_Marinov.Methods
     {
 
         private readonly PhoneBook _phoneBook;
-        private readonly ExcelControlMethods _excel;
 
 
         public UtilityMethods(PhoneBook phoneBook)
         {
             _phoneBook = phoneBook;
-            _excel = new ExcelControlMethods(phoneBook);
         }
 
 

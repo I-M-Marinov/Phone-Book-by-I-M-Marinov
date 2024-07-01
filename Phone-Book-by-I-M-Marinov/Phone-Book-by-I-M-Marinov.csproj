@@ -11,6 +11,8 @@
     <GenerateDocumentationFile>False</GenerateDocumentationFile>
     <SignAssembly>False</SignAssembly>
     <Description>A simple way to keep your contacts in order.</Description>
+	<ForceDesignerDpiUnaware>true</ForceDesignerDpiUnaware>
+
   </PropertyGroup>
 
   <ItemGroup>

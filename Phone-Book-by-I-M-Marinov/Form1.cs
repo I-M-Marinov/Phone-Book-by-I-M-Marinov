@@ -2,6 +2,7 @@ using OfficeOpenXml;
 using System.Data;
 using System.Drawing.Text;
 using Phone_Book_by_I_M_Marinov.Methods;
+using System.Windows.Forms;
 
 namespace Phone_Book_by_I_M_Marinov
 {
@@ -83,7 +84,9 @@ namespace Phone_Book_by_I_M_Marinov
 
 
                 // Show confirmation dialog
-                DialogResult result = MessageBox.Show($"Are you sure you want to delete {nameCellValue} {lastNameCellValue} ?", "Confirm Deletion", MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+                string message = string.Format(ValidationMessages.ConfirmDeletionMessage, nameCellValue, lastNameCellValue);
+                string caption = "Confirm Deletion";
+                DialogResult result = MessageBox.Show(message, caption, MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
 
                 // If user clicks 'Yes', proceed with deletion
                 if (result == DialogResult.Yes)
@@ -114,14 +117,14 @@ namespace Phone_Book_by_I_M_Marinov
                     }
                     catch (Exception exception)
                     {
-                        MessageBox.Show("Not a valid row!");
+                        MessageBox.Show(ValidationMessages.NotAValidRow);
                     }
                 }
 
             }
             else
             {
-                MessageBox.Show("No row is selected!");
+                MessageBox.Show(ValidationMessages.NoRowSelected);
             }
         }
 
@@ -132,7 +135,7 @@ namespace Phone_Book_by_I_M_Marinov
                 string.IsNullOrWhiteSpace(phoneNumberTextBox.Text) ||
                 string.IsNullOrWhiteSpace(emailTextBox.Text))
             {
-                MessageBox.Show("Please fill all the information before saving!");
+                MessageBox.Show(ValidationMessages.FillAllInformation);
                 return;
             }
 
@@ -150,7 +153,7 @@ namespace Phone_Book_by_I_M_Marinov
                 }
                 else
                 {
-                    MessageBox.Show("No row was selected!");
+                    MessageBox.Show(ValidationMessages.NotAValidRow);
                     return;
                 }
             }
@@ -158,7 +161,8 @@ namespace Phone_Book_by_I_M_Marinov
             {
                 if (_excel.ContactsDictionary.ContainsKey(entryKey))
                 {
-                    MessageBox.Show($"{firstNameTextBox.Text} {lastNameTextBox.Text} already exists in the phone book.");
+                    string message = String.Format(ValidationMessages.NameAlreadyExists, firstNameTextBox.Text, lastNameTextBox.Text);
+                    MessageBox.Show(message);
                 }
                 else
                 {
@@ -230,7 +234,7 @@ namespace Phone_Book_by_I_M_Marinov
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error opening link: " + ex.Message);
+                MessageBox.Show(ValidationMessages.ErrorOpeningLink + ex.Message);
             }
         }
 
@@ -244,7 +248,7 @@ namespace Phone_Book_by_I_M_Marinov
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Error opening link: " + ex.Message);
+                MessageBox.Show(ValidationMessages.ErrorOpeningLink + ex.Message);
             }
         }
 

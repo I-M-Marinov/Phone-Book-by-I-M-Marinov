@@ -11,7 +11,7 @@ namespace Phone_Book_by_I_M_Marinov.Methods
     public class ExcelControlMethods
     {
 
-        private readonly string _excelFilePath = @"C:\Users\Marinov\Desktop\Contacts.xlsx";
+        private readonly string _excelFilePath = ValidationMessages.ConnectionStringOne;
         public DataTable ContactsTable = new();
         public Dictionary<string, bool> ContactsDictionary = new();
         private readonly PhoneBook _phoneBook;

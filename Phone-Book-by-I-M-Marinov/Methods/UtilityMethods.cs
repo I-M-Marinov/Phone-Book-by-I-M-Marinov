@@ -20,7 +20,15 @@ namespace Phone_Book_by_I_M_Marinov.Methods
             _excel = new ExcelControlMethods(phoneBook);
         }
 
+        public void InitializeContactsTable()
+        {
+            _excel.ContactsTable.Columns.Add("First Name");
+            _excel.ContactsTable.Columns.Add("Last Name");
+            _excel.ContactsTable.Columns.Add("Phone Number");
+            _excel.ContactsTable.Columns.Add("Email");
 
+            _phoneBook.ContactsDataGrid.DataSource = _excel.ContactsTable;
+        }
         public string GetFirstCellValue()
         {
             // Get the current cell's row index and column index

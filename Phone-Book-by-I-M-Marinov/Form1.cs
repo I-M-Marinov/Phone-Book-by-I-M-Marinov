@@ -8,25 +8,23 @@ namespace Phone_Book_by_I_M_Marinov
     public partial class PhoneBook : Form
     {
 
-        private bool _isEdited;
-        private int _lastEntryIndex = -1;
+        bool isEdited;
+        private int lastEntryIndex = -1;
         private readonly ExcelControlMethods _excel;
         private readonly UtilityMethods _utilityMethod;
-        private readonly Search _search;
 
 
         public PhoneBook()
         {
             InitializeComponent();
-            searchTextBox.TextChanged += _search.SearchTextBox_TextChanges;
+            searchTextBox.TextChanged += SearchTextBox_TextChanges;
             _excel = new ExcelControlMethods(this);
-            _search = new Search(this);
             _utilityMethod = new UtilityMethods(this);
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            _utilityMethod.InitializeContactsTable();
+            InitializeContactsTable();
             _excel.LoadContactsFromExcel();
         }
 
@@ -66,6 +64,15 @@ namespace Phone_Book_by_I_M_Marinov
             set { deleteButton = value; }
         }
 
+        private void InitializeContactsTable()
+        {
+            _excel.ContactsTable.Columns.Add("First Name");
+            _excel.ContactsTable.Columns.Add("Last Name");
+            _excel.ContactsTable.Columns.Add("Phone Number");
+            _excel.ContactsTable.Columns.Add("Email");
+
+            contactsDataGrid.DataSource = _excel.ContactsTable;
+        }
 
         private void deleteButton_Click(object sender, EventArgs e)
         {
@@ -92,7 +99,7 @@ namespace Phone_Book_by_I_M_Marinov
                         if (_excel.ContactsTable.Rows.Count == 0)
                         {
                             _utilityMethod.ClearAllEntries();
-                            _isEdited = false;
+                            isEdited = false;
                         }
                         else
                         {
@@ -131,7 +138,7 @@ namespace Phone_Book_by_I_M_Marinov
 
             string entryKey = _excel.GenerateEntryKey(firstNameTextBox.Text, lastNameTextBox.Text);
 
-            if (_isEdited)
+            if (isEdited)
             {
                 if (contactsDataGrid.CurrentCell != null)
                 {
@@ -161,7 +168,7 @@ namespace Phone_Book_by_I_M_Marinov
             }
 
             _utilityMethod.ClearAllEntries();
-            _isEdited = false;
+            isEdited = false;
         }
 
         private void loadButton_Click(object sender, EventArgs e)
@@ -176,7 +183,7 @@ namespace Phone_Book_by_I_M_Marinov
                     lastNameTextBox.Text = _excel.ContactsTable.Rows[rowIndex].ItemArray[1].ToString();
                     phoneNumberTextBox.Text = _excel.ContactsTable.Rows[rowIndex].ItemArray[2].ToString();
                     emailTextBox.Text = _excel.ContactsTable.Rows[rowIndex].ItemArray[3].ToString();
-                    _isEdited = true;
+                    isEdited = true;
                 }
                 else
                 {
@@ -192,13 +199,13 @@ namespace Phone_Book_by_I_M_Marinov
 
         private void contactsDataGrid_CellMouseClick(object sender, DataGridViewCellMouseEventArgs e)
         {
-            if (contactsDataGrid.CurrentCell != null && _lastEntryIndex == contactsDataGrid.CurrentCell.RowIndex + 1)
+            if (contactsDataGrid.CurrentCell != null && lastEntryIndex == contactsDataGrid.CurrentCell.RowIndex + 1)
             {
                 firstNameTextBox.Text = _excel.ContactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex].ItemArray[0].ToString();
                 lastNameTextBox.Text = _excel.ContactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex].ItemArray[1].ToString();
                 phoneNumberTextBox.Text = _excel.ContactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex].ItemArray[2].ToString();
                 emailTextBox.Text = _excel.ContactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex].ItemArray[3].ToString();
-                _isEdited = true;
+                isEdited = true;
             }
         }
 
@@ -210,7 +217,7 @@ namespace Phone_Book_by_I_M_Marinov
             {
                 _excel.ContactsDictionary.Add(entryKey, true);
             }
-            _lastEntryIndex = _excel.ContactsTable.Rows.Count - 1;
+            lastEntryIndex = _excel.ContactsTable.Rows.Count - 1;
         }
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
@@ -241,6 +248,31 @@ namespace Phone_Book_by_I_M_Marinov
             }
         }
 
+        private void SearchTextBox_TextChanges(object sender, EventArgs e)
+        {
+            string searchString = searchTextBox.Text.ToLower(); // Get the search string, convert it to lower case ( so the search is not case-sensitive )
+
+            if (string.IsNullOrWhiteSpace(searchString))
+            {
+                contactsDataGrid.DataSource = _excel.ContactsTable; // Reset the data source to the original ContactsTable
+                deleteButton.Enabled = true; // Enable the delete button if the searchTextBox is IsNullOrWhiteSpace
+            }
+            else
+            {
+                DataTable filteredTable = _excel.ContactsTable.Clone(); // Create a clone of the ContactsTable 
+
+                foreach (DataRow row in _excel.ContactsTable.Rows) // Iterate over all the Rows of the ContactsTable to look for matches to the searchString
+                {
+                    if (row["First Name"].ToString().ToLower().Contains(searchString))
+                    {
+                        filteredTable.ImportRow(row); // Import matching rows to the filtered table
+                    }
+                }
+
+                contactsDataGrid.DataSource = filteredTable; // Visualize the filtered table to the DataGridView
+                deleteButton.Enabled = false; // Disable the delete button while searching
+            }
+        }
 
 
     }

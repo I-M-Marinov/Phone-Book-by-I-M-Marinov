@@ -1,38 +1,39 @@
 using OfficeOpenXml;
 using System.Data;
 using System.Drawing.Text;
+using Phone_Book_by_I_M_Marinov.Methods;
 
 namespace Phone_Book_by_I_M_Marinov
 {
     public partial class PhoneBook : Form
     {
 
-        string excelFilePath = @"C:\Users\Marinov\Desktop\Contacts.xlsx";
-        DataTable contactsTable = new();
-        Dictionary<string, bool> contactsDictionary = new();
         bool isEdited;
         private int lastEntryIndex = -1;
+        private readonly ExcelControlMethods _excel;
+
 
         public PhoneBook()
         {
             InitializeComponent();
             searchTextBox.TextChanged += SearchTextBox_TextChanges;
+            _excel = new ExcelControlMethods(this);
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
             InitializeContactsTable();
-            LoadContactsFromExcel();
+            _excel.LoadContactsFromExcel();
         }
 
         private void InitializeContactsTable()
         {
-            contactsTable.Columns.Add("First Name");
-            contactsTable.Columns.Add("Last Name");
-            contactsTable.Columns.Add("Phone Number");
-            contactsTable.Columns.Add("Email");
+            _excel.contactsTable.Columns.Add("First Name");
+            _excel.contactsTable.Columns.Add("Last Name");
+            _excel.contactsTable.Columns.Add("Phone Number");
+            _excel.contactsTable.Columns.Add("Email");
 
-            contactsDataGrid.DataSource = contactsTable;
+            contactsDataGrid.DataSource = _excel.contactsTable;
         }
 
         private void deleteButton_Click(object sender, EventArgs e)
@@ -52,21 +53,21 @@ namespace Phone_Book_by_I_M_Marinov
                     try
                     {
                         int rowIndex = contactsDataGrid.CurrentCell.RowIndex;
-                        string entryKey = GenerateEntryKey(contactsTable.Rows[rowIndex]);
-                        contactsTable.Rows.RemoveAt(rowIndex);
-                        contactsDictionary.Remove(entryKey);
-                        SaveContactsToExcel();
+                        string entryKey = _excel.GenerateEntryKey(_excel.contactsTable.Rows[rowIndex]);
+                        _excel.contactsTable.Rows.RemoveAt(rowIndex);
+                        _excel.contactsDictionary.Remove(entryKey);
+                        _excel.SaveContactsToExcel();
 
-                        if (contactsTable.Rows.Count == 0)
+                        if (_excel.contactsTable.Rows.Count == 0)
                         {
                             ClearAllEntries();
                             isEdited = false;
                         }
                         else
                         {
-                            if (rowIndex >= contactsTable.Rows.Count)
+                            if (rowIndex >= _excel.contactsTable.Rows.Count)
                             {
-                                rowIndex = contactsTable.Rows.Count - 1;
+                                rowIndex = _excel.contactsTable.Rows.Count - 1;
                             }
                             contactsDataGrid.CurrentCell = contactsDataGrid.Rows[rowIndex].Cells[0];
                             contactsDataGrid.Rows[rowIndex].Selected = true;
@@ -97,17 +98,17 @@ namespace Phone_Book_by_I_M_Marinov
                 return;
             }
 
-            string entryKey = GenerateEntryKey(firstNameTextBox.Text, lastNameTextBox.Text);
+            string entryKey = _excel.GenerateEntryKey(firstNameTextBox.Text, lastNameTextBox.Text);
 
             if (isEdited)
             {
                 if (contactsDataGrid.CurrentCell != null)
                 {
-                    contactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex]["First Name"] = firstNameTextBox.Text;
-                    contactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex]["Last Name"] = lastNameTextBox.Text;
-                    contactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex]["Phone Number"] = phoneNumberTextBox.Text;
-                    contactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex]["Email"] = emailTextBox.Text;
-                    SaveContactsToExcel();
+                    _excel.contactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex]["First Name"] = firstNameTextBox.Text;
+                    _excel.contactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex]["Last Name"] = lastNameTextBox.Text;
+                    _excel.contactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex]["Phone Number"] = phoneNumberTextBox.Text;
+                    _excel.contactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex]["Email"] = emailTextBox.Text;
+                    _excel.SaveContactsToExcel();
                 }
                 else
                 {
@@ -117,14 +118,14 @@ namespace Phone_Book_by_I_M_Marinov
             }
             else
             {
-                if (contactsDictionary.ContainsKey(entryKey))
+                if (_excel.contactsDictionary.ContainsKey(entryKey))
                 {
                     MessageBox.Show($"{firstNameTextBox.Text} {lastNameTextBox.Text} already exists in the phone book.");
                 }
                 else
                 {
                     AddEntryToDataTable(firstNameTextBox.Text, lastNameTextBox.Text, phoneNumberTextBox.Text, emailTextBox.Text);
-                    SaveContactsToExcel();
+                    _excel.SaveContactsToExcel();
                 }
             }
 
@@ -138,12 +139,12 @@ namespace Phone_Book_by_I_M_Marinov
             {
                 int rowIndex = contactsDataGrid.CurrentCell.RowIndex;
 
-                if (rowIndex < contactsTable.Rows.Count)
+                if (rowIndex < _excel.contactsTable.Rows.Count)
                 {
-                    firstNameTextBox.Text = contactsTable.Rows[rowIndex].ItemArray[0].ToString();
-                    lastNameTextBox.Text = contactsTable.Rows[rowIndex].ItemArray[1].ToString();
-                    phoneNumberTextBox.Text = contactsTable.Rows[rowIndex].ItemArray[2].ToString();
-                    emailTextBox.Text = contactsTable.Rows[rowIndex].ItemArray[3].ToString();
+                    firstNameTextBox.Text = _excel.contactsTable.Rows[rowIndex].ItemArray[0].ToString();
+                    lastNameTextBox.Text = _excel.contactsTable.Rows[rowIndex].ItemArray[1].ToString();
+                    phoneNumberTextBox.Text = _excel.contactsTable.Rows[rowIndex].ItemArray[2].ToString();
+                    emailTextBox.Text = _excel.contactsTable.Rows[rowIndex].ItemArray[3].ToString();
                     isEdited = true;
                 }
                 else
@@ -162,10 +163,10 @@ namespace Phone_Book_by_I_M_Marinov
         {
             if (contactsDataGrid.CurrentCell != null && lastEntryIndex == contactsDataGrid.CurrentCell.RowIndex + 1)
             {
-                firstNameTextBox.Text = contactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex].ItemArray[0].ToString();
-                lastNameTextBox.Text = contactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex].ItemArray[1].ToString();
-                phoneNumberTextBox.Text = contactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex].ItemArray[2].ToString();
-                emailTextBox.Text = contactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex].ItemArray[3].ToString();
+                firstNameTextBox.Text = _excel.contactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex].ItemArray[0].ToString();
+                lastNameTextBox.Text = _excel.contactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex].ItemArray[1].ToString();
+                phoneNumberTextBox.Text = _excel.contactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex].ItemArray[2].ToString();
+                emailTextBox.Text = _excel.contactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex].ItemArray[3].ToString();
                 isEdited = true;
             }
         }
@@ -178,108 +179,18 @@ namespace Phone_Book_by_I_M_Marinov
             emailTextBox.Text = "";
         }
 
-        private void LoadContactsFromExcel()
-        {
-            if (!File.Exists(excelFilePath))
-            {
-                // Create a new Excel file if it does not exist
-
-                ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-                using (ExcelPackage package = new ExcelPackage())
-                {
-                    ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("Contacts");
-
-                    worksheet.Cells[1, 1].Value = "First Name";
-                    worksheet.Cells[1, 2].Value = "Last Name";
-                    worksheet.Cells[1, 3].Value = "Phone Number";
-                    worksheet.Cells[1, 4].Value = "Email";
-
-                    package.SaveAs(new FileInfo(excelFilePath));
-                }
-            }
-            
-            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-            using (ExcelPackage package = new ExcelPackage(new FileInfo(excelFilePath)))
-            {
-                ExcelWorksheet worksheet = package.Workbook.Worksheets["Contacts"];
-                int rowCount = worksheet.Dimension.Rows;
-
-                for (int row = 2; row <= rowCount; row++)
-                {
-                    string firstName = worksheet.Cells[row, 1].Value?.ToString();
-                    string lastName = worksheet.Cells[row, 2].Value?.ToString();
-                    string phoneNumber = worksheet.Cells[row, 3].Value?.ToString();
-                    string email = worksheet.Cells[row, 4].Value?.ToString();
-
-                    contactsTable.Rows.Add(firstName, lastName, phoneNumber, email);
-                    string entryKey = GenerateEntryKey(firstName, lastName);
-                    if (!contactsDictionary.ContainsKey(entryKey))
-                    {
-                        contactsDictionary.Add(entryKey, true);
-                    }
-                }
-            }
-        }
-
-        private void SaveContactsToExcel()
-        {
-            if (File.Exists(excelFilePath))
-            {
-                using (ExcelPackage package = new ExcelPackage(new FileInfo(excelFilePath)))
-                {
-                    ExcelWorksheet worksheet = package.Workbook.Worksheets["Contacts"];
-
-                    if (contactsTable.Rows.Count > 0)
-                    {
-                        if (worksheet.Dimension?.Rows > 1 && worksheet.Dimension?.Columns > 0)
-                        {
-                            worksheet.Cells["A2:D" + worksheet.Dimension.End.Row].Clear();
-                        }
-
-                        int rowIndex = 2;
-                        foreach (DataRow row in contactsTable.Rows)
-                        {
-                            if (row.RowState != DataRowState.Deleted)
-                            {
-                                worksheet.Cells[rowIndex, 1].Value = row["First Name"];
-                                worksheet.Cells[rowIndex, 2].Value = row["Last Name"];
-                                worksheet.Cells[rowIndex, 3].Value = row["Phone Number"];
-                                worksheet.Cells[rowIndex, 4].Value = row["Email"];
-                                rowIndex++;
-                            }
-                        }
-                    }
-
-                    if (contactsTable.Rows.Count == 0)
-                    {
-                        worksheet.Cells["A2:D" + worksheet.Dimension.End.Row].Clear();
-                    }
-
-                    package.Save();
-                }
-            }
-        }
-
         private void AddEntryToDataTable(string firstName, string lastName, string phoneNumber, string email)
         {
-            contactsTable.Rows.Add(firstName, lastName, phoneNumber, email);
-            string entryKey = GenerateEntryKey(firstName, lastName);
-            if (!contactsDictionary.ContainsKey(entryKey))
+            _excel.contactsTable.Rows.Add(firstName, lastName, phoneNumber, email);
+            string entryKey = _excel.GenerateEntryKey(firstName, lastName);
+            if (!_excel.contactsDictionary.ContainsKey(entryKey))
             {
-                contactsDictionary.Add(entryKey, true);
+                _excel.contactsDictionary.Add(entryKey, true);
             }
-            lastEntryIndex = contactsTable.Rows.Count - 1;
+            lastEntryIndex = _excel.contactsTable.Rows.Count - 1;
         }
 
-        private string GenerateEntryKey(DataRow row)
-        {
-            return $"{row["First Name"]?.ToString().ToLower()}-{row["Last Name"]?.ToString().ToLower()}";
-        }
 
-        private string GenerateEntryKey(string firstName, string lastName)
-        {
-            return $"{firstName?.ToLower()} {lastName?.ToLower()}";
-        }
 
         private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
         {
@@ -315,14 +226,14 @@ namespace Phone_Book_by_I_M_Marinov
 
             if (string.IsNullOrWhiteSpace(searchString))
             {
-                contactsDataGrid.DataSource = contactsTable; // Reset the data source to the original contactsTable
+                contactsDataGrid.DataSource = _excel.contactsTable; // Reset the data source to the original contactsTable
                 deleteButton.Enabled = true; // Enable the delete button if the searchTextBox is IsNullOrWhiteSpace
             }
             else
             {
-                DataTable filteredTable = contactsTable.Clone(); // Create a clone of the contactsTable 
+                DataTable filteredTable = _excel.contactsTable.Clone(); // Create a clone of the contactsTable 
 
-                foreach (DataRow row in contactsTable.Rows) // Iterate over all the Rows of the contactsTable to look for matches to the searchString
+                foreach (DataRow row in _excel.contactsTable.Rows) // Iterate over all the Rows of the contactsTable to look for matches to the searchString
                 {
                     if (row["First Name"].ToString().ToLower().Contains(searchString))
                     {

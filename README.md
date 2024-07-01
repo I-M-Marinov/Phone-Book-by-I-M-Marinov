@@ -14,7 +14,7 @@
 - Microsoft Office Excel
   
 
-## Design Diagram:
+## Original Design Diagram:
 
 <p align="center">
 <img src="./Phone-Book-by-I-M-Marinov/pictures/design-diagram-phone-book.png">
@@ -30,23 +30,33 @@
 
 ## Updates
 - Program now checks for duplicate contacts ( only by First and Last Name, so it let's the user add a second number or email for instance for the same person under a different name )
-- The delete button would no longer delete immediately a contact. Extra validation added, so the user can avoid accidently deleting contacts from the list. 
+- The delete button would no longer delete immediately a contact. Extra validation added, so the user can avoid accidently deleting contacts from the list.
+- Search ----> You can search by First Name in the application. While searching you cannot delete a contact ( delete button is disabled ).
+  
+<p align="center">
+<img src="./Phone-Book-by-I-M-Marinov/pictures/Phone-book-screenshot2-deleteButton.png"> 
+</p>
+
+<p align="center">
+<img src="./Phone-Book-by-I-M-Marinov/pictures/Phone-book-screenshot3-deleteButton2.png"> 
+</p>
 
 ## Screenshots: 
 
 <p align="center">
-<img src="./Phone-Book-by-I-M-Marinov/pictures/Phone-book-screenshot.PNG">
+<img src="./Phone-Book-by-I-M-Marinov/pictures/Phone-book-screenshot1.png">
 </p>
 
 <p align="center">
-<img src="./Phone-Book-by-I-M-Marinov/pictures/contacts-excel.PNG">
+<img src="./Phone-Book-by-I-M-Marinov/pictures/Phone-book-screenshot4-spreadsheet.png">
 </p>
 
 
 ## Planned updates:
 
-- Search
+- Implement a way for the user to choose where the "Contacts" spreadsheet is saved 
 - Data validation for the phone number field
+- Data validation for the email field
   
 
 

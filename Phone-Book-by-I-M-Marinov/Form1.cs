@@ -3,6 +3,7 @@ using System.Data;
 using System.Drawing.Text;
 using Phone_Book_by_I_M_Marinov.Methods;
 using System.Windows.Forms;
+using Phone_Book_by_I_M_Marinov.Validation;
 
 namespace Phone_Book_by_I_M_Marinov
 {
@@ -13,7 +14,7 @@ namespace Phone_Book_by_I_M_Marinov
         private int lastEntryIndex = -1;
         private readonly ExcelControlMethods _excel;
         private readonly UtilityMethods _utilityMethod;
-
+        
 
         public PhoneBook()
         {
@@ -97,7 +98,7 @@ namespace Phone_Book_by_I_M_Marinov
                         string entryKey = _excel.GenerateEntryKey(_excel.ContactsTable.Rows[rowIndex]);
                         _excel.ContactsTable.Rows.RemoveAt(rowIndex);
                         _excel.ContactsDictionary.Remove(entryKey);
-                        _excel.SaveContactsToExcel();
+                        _excel.AddNewContactAndSave();
 
                         if (_excel.ContactsTable.Rows.Count == 0)
                         {
@@ -149,7 +150,7 @@ namespace Phone_Book_by_I_M_Marinov
                     _excel.ContactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex]["Last Name"] = lastNameTextBox.Text;
                     _excel.ContactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex]["Phone Number"] = phoneNumberTextBox.Text;
                     _excel.ContactsTable.Rows[contactsDataGrid.CurrentCell.RowIndex]["Email"] = emailTextBox.Text;
-                    _excel.SaveContactsToExcel();
+                    _excel.AddNewContactAndSave();
                 }
                 else
                 {
@@ -167,7 +168,7 @@ namespace Phone_Book_by_I_M_Marinov
                 else
                 {
                     AddEntryToDataTable(firstNameTextBox.Text, lastNameTextBox.Text, phoneNumberTextBox.Text, emailTextBox.Text);
-                    _excel.SaveContactsToExcel();
+                    _excel.AddNewContactAndSave();
                 }
             }
 

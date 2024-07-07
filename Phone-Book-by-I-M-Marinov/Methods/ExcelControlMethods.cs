@@ -1,4 +1,5 @@
 ﻿using OfficeOpenXml;
+using Phone_Book_by_I_M_Marinov.Validation;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -11,10 +12,12 @@ namespace Phone_Book_by_I_M_Marinov.Methods
     public class ExcelControlMethods
     {
 
-        private readonly string _excelFilePath = ValidationMessages.ConnectionStringOne;
+        private string _excelFilePath = ExcelValidation.ExcelFilePathOne;
         public DataTable ContactsTable = new();
         public Dictionary<string, bool> ContactsDictionary = new();
         private readonly PhoneBook _phoneBook;
+
+
 
         public ExcelControlMethods(PhoneBook phoneBook)
         {
@@ -23,6 +26,8 @@ namespace Phone_Book_by_I_M_Marinov.Methods
 
         public void LoadContactsFromExcel()
         {
+            SetAndValidateFilePath();
+
             if (!File.Exists(_excelFilePath)) // Create a new Excel file if it does not exist
             {
                 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
@@ -61,51 +66,87 @@ namespace Phone_Book_by_I_M_Marinov.Methods
                 }
             }
         }
-
-        public void SaveContactsToExcel()
+        private void SaveContactsToExcel()
+    {
+        if (File.Exists(_excelFilePath))
         {
-            if (File.Exists(_excelFilePath))
+            using (ExcelPackage package = new ExcelPackage(new FileInfo(_excelFilePath)))
             {
-                using (ExcelPackage package = new ExcelPackage(new FileInfo(_excelFilePath)))
+                ExcelWorksheet worksheet = package.Workbook.Worksheets["Contacts"];
+
+                if (ContactsTable.Rows.Count > 0)
                 {
-                    ExcelWorksheet worksheet = package.Workbook.Worksheets["Contacts"];
-
-                    if (ContactsTable.Rows.Count > 0)
-                    {
-                        if (worksheet.Dimension?.Rows > 1 && worksheet.Dimension?.Columns > 0)
-                        {
-                            worksheet.Cells["A2:D" + worksheet.Dimension.End.Row].Clear();
-                        }
-
-                        int rowIndex = 2;
-                        foreach (DataRow row in ContactsTable.Rows)
-                        {
-                            if (row.RowState != DataRowState.Deleted)
-                            {
-                                worksheet.Cells[rowIndex, 1].Value = row["First Name"];
-                                worksheet.Cells[rowIndex, 2].Value = row["Last Name"];
-                                worksheet.Cells[rowIndex, 3].Value = row["Phone Number"];
-                                worksheet.Cells[rowIndex, 4].Value = row["Email"];
-                                rowIndex++;
-                            }
-                        }
-                    }
-
-                    if (ContactsTable.Rows.Count == 0)
+                    if (worksheet.Dimension?.Rows > 1 && worksheet.Dimension?.Columns > 0)
                     {
                         worksheet.Cells["A2:D" + worksheet.Dimension.End.Row].Clear();
                     }
 
-                    package.Save();
+                    int rowIndex = 2;
+                    foreach (DataRow row in ContactsTable.Rows)
+                    {
+                        if (row.RowState != DataRowState.Deleted)
+                        {
+                            worksheet.Cells[rowIndex, 1].Value = row["First Name"];
+                            worksheet.Cells[rowIndex, 2].Value = row["Last Name"];
+                            worksheet.Cells[rowIndex, 3].Value = row["Phone Number"];
+                            worksheet.Cells[rowIndex, 4].Value = row["Email"];
+                            rowIndex++;
+                        }
+                    }
                 }
+
+                if (ContactsTable.Rows.Count == 0)
+                {
+                    worksheet.Cells["A2:D" + worksheet.Dimension.End.Row].Clear();
+                }
+
+                package.Save();
+            }
+        }
+    }
+        private bool SetAndValidateFilePath()
+    {
+        if (string.IsNullOrEmpty(_excelFilePath))
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = ExcelValidation.FilterExcelFile;
+            saveFileDialog.Title = ExcelValidation.TitleExcelFile;
+            saveFileDialog.DefaultExt = ExcelValidation.DefaultExtExcelFile;
+            saveFileDialog.FileName = ExcelValidation.FileNameExcelFile;
+
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                _excelFilePath = saveFileDialog.FileName;
+            }
+            else
+            {
+                return false; 
             }
         }
 
+        if (File.Exists(_excelFilePath))
+        {
+            DialogResult overwriteResult = MessageBox.Show(ExcelValidation.OverwriteFileMessage, ExcelValidation.OverwriteFileCaption, MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
+
+            if (overwriteResult == DialogResult.No)
+            {
+                return false;
+            }
+        }
+
+        return true; 
+    }
+        public void AddNewContactAndSave()
+    {
+        if (SetAndValidateFilePath())
+        {
+            SaveContactsToExcel();
+        }
+    }
         public string GenerateEntryKey(DataRow row)
         {
             return $"{row["First Name"]?.ToString().ToLower()}-{row["Last Name"]?.ToString().ToLower()}";
         }
-
         public string GenerateEntryKey(string firstName, string lastName)
         {
             return $"{firstName?.ToLower()} {lastName?.ToLower()}";

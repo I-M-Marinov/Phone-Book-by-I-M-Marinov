@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Phone_Book_by_I_M_Marinov
+namespace Phone_Book_by_I_M_Marinov.Validation
 {
     public class ValidationMessages
     {
@@ -15,10 +15,6 @@ namespace Phone_Book_by_I_M_Marinov
         public const string FillAllInformation = "Please fill all the information before saving!";
         public const string NameAlreadyExists = "{0} {0} already exists in the phone book.";
         public const string ErrorOpeningLink = "Error opening link: ";
-
-        /* Connection Strings for an easy access */
-        public const string ConnectionStringOne = @"C:\Users\Ivan Marinov\Desktop\Contacts.xlsx";
-        public const string ConnectionStringTwo = @"C:\Users\Marinov\Desktop\Contacts.xlsx";
 
     }
 }

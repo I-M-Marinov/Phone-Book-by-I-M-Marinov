@@ -97,7 +97,7 @@ namespace Phone_Book_by_I_M_Marinov
                         int rowIndex = contactsDataGrid.CurrentCell.RowIndex;
                         string entryKey = _excel.GenerateEntryKey(_excel.ContactsTable.Rows[rowIndex]);
                         _excel.ContactsTable.Rows.RemoveAt(rowIndex);
-                        _excel.ContactsDictionary.Remove(entryKey);
+                        _excel.ContactsSortedList.Remove(entryKey);
                         _excel.AddNewContactAndSave();
 
                         if (_excel.ContactsTable.Rows.Count == 0)
@@ -160,7 +160,7 @@ namespace Phone_Book_by_I_M_Marinov
             }
             else
             {
-                if (_excel.ContactsDictionary.ContainsKey(entryKey))
+                if (_excel.ContactsSortedList.ContainsKey(entryKey))
                 {
                     string message = String.Format(ValidationMessages.NameAlreadyExists, firstNameTextBox.Text, lastNameTextBox.Text);
                     MessageBox.Show(message);
@@ -218,9 +218,9 @@ namespace Phone_Book_by_I_M_Marinov
         {
             _excel.ContactsTable.Rows.Add(firstName, lastName, phoneNumber, email);
             string entryKey = _excel.GenerateEntryKey(firstName, lastName);
-            if (!_excel.ContactsDictionary.ContainsKey(entryKey))
+            if (!_excel.ContactsSortedList.ContainsKey(entryKey))
             {
-                _excel.ContactsDictionary.Add(entryKey, true);
+                _excel.ContactsSortedList.Add(entryKey, true);
             }
             lastEntryIndex = _excel.ContactsTable.Rows.Count - 1;
         }

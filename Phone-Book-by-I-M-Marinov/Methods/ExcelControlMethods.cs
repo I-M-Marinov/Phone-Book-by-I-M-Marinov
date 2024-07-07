@@ -14,7 +14,7 @@ namespace Phone_Book_by_I_M_Marinov.Methods
 
         private string _excelFilePath = ExcelValidation.ExcelFilePathOne;
         public DataTable ContactsTable = new();
-        public Dictionary<string, bool> ContactsDictionary = new();
+        public SortedList<string, bool> ContactsDictionary = new();
         private readonly PhoneBook _phoneBook;
 
 
@@ -26,10 +26,10 @@ namespace Phone_Book_by_I_M_Marinov.Methods
 
         public void LoadContactsFromExcel()
         {
-            SetAndValidateFilePath();
-
+            
             if (!File.Exists(_excelFilePath)) // Create a new Excel file if it does not exist
             {
+                SetAndValidateFilePath();
                 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
                 using (ExcelPackage package = new ExcelPackage())
                 {

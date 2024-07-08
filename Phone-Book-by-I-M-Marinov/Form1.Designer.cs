@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            DataGridViewCellStyle dataGridViewCellStyle1 = new DataGridViewCellStyle();
+            DataGridViewCellStyle dataGridViewCellStyle2 = new DataGridViewCellStyle();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PhoneBook));
             newEntryButton = new Button();
             firstNameTextBox = new TextBox();
@@ -47,6 +47,7 @@
             pictureBox1 = new PictureBox();
             searchTextBox = new TextBox();
             searchLabel = new Label();
+            excelPathButton = new Button();
             ((System.ComponentModel.ISupportInitialize)contactsDataGrid).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             SuspendLayout();
@@ -205,12 +206,12 @@
             contactsDataGrid.Margin = new Padding(2);
             contactsDataGrid.Name = "contactsDataGrid";
             contactsDataGrid.RowHeadersWidth = 62;
-            dataGridViewCellStyle1.BackColor = Color.AntiqueWhite;
-            dataGridViewCellStyle1.Font = new Font("Trebuchet MS", 11F, FontStyle.Regular, GraphicsUnit.Point);
-            dataGridViewCellStyle1.ForeColor = Color.MediumBlue;
-            dataGridViewCellStyle1.SelectionBackColor = Color.LightGreen;
-            dataGridViewCellStyle1.SelectionForeColor = Color.Black;
-            contactsDataGrid.RowsDefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.BackColor = Color.AntiqueWhite;
+            dataGridViewCellStyle2.Font = new Font("Trebuchet MS", 11F, FontStyle.Regular, GraphicsUnit.Point);
+            dataGridViewCellStyle2.ForeColor = Color.MediumBlue;
+            dataGridViewCellStyle2.SelectionBackColor = Color.LightGreen;
+            dataGridViewCellStyle2.SelectionForeColor = Color.Black;
+            contactsDataGrid.RowsDefaultCellStyle = dataGridViewCellStyle2;
             contactsDataGrid.RowTemplate.Height = 33;
             contactsDataGrid.Size = new Size(952, 410);
             contactsDataGrid.TabIndex = 12;
@@ -259,12 +260,23 @@
             searchLabel.TabIndex = 16;
             searchLabel.Text = "Search by First Name:";
             // 
+            // excelPathButton
+            // 
+            excelPathButton.Location = new Point(773, 222);
+            excelPathButton.Name = "excelPathButton";
+            excelPathButton.Size = new Size(115, 23);
+            excelPathButton.TabIndex = 17;
+            excelPathButton.Text = "Change Excel path";
+            excelPathButton.UseVisualStyleBackColor = true;
+            excelPathButton.Click += excelPathButton_Click;
+            // 
             // PhoneBook
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.Silver;
             ClientSize = new Size(956, 661);
+            Controls.Add(excelPathButton);
             Controls.Add(searchLabel);
             Controls.Add(searchTextBox);
             Controls.Add(linkLabel1);
@@ -312,5 +324,6 @@
         private PictureBox pictureBox1;
         private TextBox searchTextBox;
         private Label searchLabel;
+        private Button excelPathButton;
     }
 }

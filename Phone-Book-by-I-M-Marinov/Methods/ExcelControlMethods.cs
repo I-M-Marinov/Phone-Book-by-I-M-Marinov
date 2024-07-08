@@ -14,7 +14,7 @@ namespace Phone_Book_by_I_M_Marinov.Methods
 
         private string _excelFilePath = ExcelValidation.ExcelFilePathOne;
         public DataTable ContactsTable = new();
-        public SortedList<string, bool> ContactsDictionary = new();
+        public SortedList<string, bool> ContactsSortedList = new();
         private readonly PhoneBook _phoneBook;
 
 
@@ -29,7 +29,7 @@ namespace Phone_Book_by_I_M_Marinov.Methods
             
             if (!File.Exists(_excelFilePath)) // Create a new Excel file if it does not exist
             {
-                SetAndValidateFilePath();
+                ValidateFilePath();
                 ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
                 using (ExcelPackage package = new ExcelPackage())
                 {
@@ -59,9 +59,9 @@ namespace Phone_Book_by_I_M_Marinov.Methods
 
                     ContactsTable.Rows.Add(firstName, lastName, phoneNumber, email);
                     string entryKey = GenerateEntryKey(firstName, lastName);
-                    if (!ContactsDictionary.ContainsKey(entryKey))
+                    if (!ContactsSortedList.ContainsKey(entryKey))
                     {
-                        ContactsDictionary.Add(entryKey, true);
+                        ContactsSortedList.Add(entryKey, true);
                     }
                 }
             }
@@ -104,26 +104,9 @@ namespace Phone_Book_by_I_M_Marinov.Methods
             }
         }
     }
-        private bool SetAndValidateFilePath()
-    {
-        if (string.IsNullOrEmpty(_excelFilePath))
+        private bool ValidateFilePath()
         {
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.Filter = ExcelValidation.FilterExcelFile;
-            saveFileDialog.Title = ExcelValidation.TitleExcelFile;
-            saveFileDialog.DefaultExt = ExcelValidation.DefaultExtExcelFile;
-            saveFileDialog.FileName = ExcelValidation.FileNameExcelFile;
-
-            if (saveFileDialog.ShowDialog() == DialogResult.OK)
-            {
-                _excelFilePath = saveFileDialog.FileName;
-            }
-            else
-            {
-                return false; 
-            }
-        }
-
+            
         if (File.Exists(_excelFilePath))
         {
             DialogResult overwriteResult = MessageBox.Show(ExcelValidation.OverwriteFileMessage, ExcelValidation.OverwriteFileCaption, MessageBoxButtons.YesNo, MessageBoxIcon.Warning);
@@ -135,10 +118,23 @@ namespace Phone_Book_by_I_M_Marinov.Methods
         }
 
         return true; 
-    }
+        }
+        public void ChangeExcelFilePath()
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = ExcelValidation.FilterExcelFile;
+            saveFileDialog.Title = ExcelValidation.TitleExcelFile;
+            saveFileDialog.DefaultExt = ExcelValidation.DefaultExtExcelFile;
+            saveFileDialog.FileName = ExcelValidation.FileNameExcelFile;
+
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                _excelFilePath = saveFileDialog.FileName;
+            }
+        }
         public void AddNewContactAndSave()
     {
-        if (SetAndValidateFilePath())
+        if (ValidateFilePath())
         {
             SaveContactsToExcel();
         }

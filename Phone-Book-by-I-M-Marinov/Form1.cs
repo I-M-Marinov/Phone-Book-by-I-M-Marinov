@@ -14,7 +14,7 @@ namespace Phone_Book_by_I_M_Marinov
         private int lastEntryIndex = -1;
         private readonly ExcelControlMethods _excel;
         private readonly UtilityMethods _utilityMethod;
-        
+
 
         public PhoneBook()
         {
@@ -279,6 +279,10 @@ namespace Phone_Book_by_I_M_Marinov
             }
         }
 
-
+        private void excelPathButton_Click(object sender, EventArgs e)
+        {
+            _excel.ChangeExcelFilePath();
+            _excel.AddNewContactAndSave();
+        }
     }
 }

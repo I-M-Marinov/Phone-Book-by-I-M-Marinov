@@ -69,13 +69,43 @@ namespace Phone_Book_by_I_M_Marinov.Methods
             }
         }
         private void SaveContactsToExcel()
-    {
-        if (File.Exists(_excelFilePath))
         {
-        
+            if (File.Exists(_excelFilePath))
+            {
+                using (ExcelPackage package = new ExcelPackage(new FileInfo(_excelFilePath)))
+                {
+                    ExcelWorksheet worksheet = package.Workbook.Worksheets["Contacts"];
 
+                    if (ContactsTable.Rows.Count > 0)
+                    {
+                        if (worksheet.Dimension?.Rows > 1 && worksheet.Dimension?.Columns > 0)
+                        {
+                            worksheet.Cells["A2:D" + worksheet.Dimension.End.Row].Clear();
+                        }
+
+                        int rowIndex = 2;
+                        foreach (DataRow row in ContactsTable.Rows)
+                        {
+                            if (row.RowState != DataRowState.Deleted)
+                            {
+                                worksheet.Cells[rowIndex, 1].Value = row["First Name"];
+                                worksheet.Cells[rowIndex, 2].Value = row["Last Name"];
+                                worksheet.Cells[rowIndex, 3].Value = row["Phone Number"];
+                                worksheet.Cells[rowIndex, 4].Value = row["Email"];
+                                rowIndex++;
+                            }
+                        }
+                    }
+
+                    if (ContactsTable.Rows.Count == 0)
+                    {
+                        worksheet.Cells["A2:D" + worksheet.Dimension.End.Row].Clear();
+                    }
+
+                    package.Save();
+                }
+            }
         }
-    }
         private bool ValidateFilePath()
         {
             

@@ -26,7 +26,7 @@
 - Load - Loads an entry when it is marked on in the DataGrid View on the bottom of the application
 - Save - Saves an entry in the database. Contacts are going to be saved if all the information is put in ( cannot save incomplete contacts ).
 - Delete - Deletes an entry from the DataGrid View in the application and in the database ( Excel spreadsheet ).
-- Adjustable file path for the Contacts Excel file. Just go in and change the string **excelFilePath = @"C:\Users\Marinov\Desktop\contacts.xlsx"**
+- Adjustable file path for the "Contacts" Excel file. If you choose a new path, the application would move the ooriginal file to the new directory. 
 
 ## Updates
 - Program now checks for duplicate contacts ( only by First and Last Name, so it let's the user add a second number or email for instance for the same person under a different name )

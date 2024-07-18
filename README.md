@@ -32,7 +32,8 @@
 - Program now checks for duplicate contacts ( only by First and Last Name, so it let's the user add a second number or email for instance for the same person under a different name )
 - The delete button would no longer delete immediately a contact. Extra validation added, so the user can avoid accidently deleting contacts from the list.
 - Search ----> You can search by First Name in the application. While searching you cannot delete a contact ( delete button is disabled ).
-- The application comes with a default file path for the Contacts spreadsheet, but if you would like to change it you can do so when saving a new contact. The application will now ask for confirmation to save the information that was added in the app on the spreadsheet as well ( Save and Delete ). 
+- The application comes with a default file path for the Contacts spreadsheet, but if you would like to change it you can do so when saving a new contact. The application will now ask for confirmation to save the information that was added in the app on the spreadsheet as well ( Save and Delete ).
+- File Path for the application is now added to Options on the project. If you want to change the Excel path, it would simply get the file from it's last known directory and move it to the new one ( in opposition to actually creating a new file like before ). 
 
   
 <p align="center">

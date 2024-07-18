@@ -16,8 +16,5 @@ namespace Phone_Book_by_I_M_Marinov.Validation
         public const string OverwriteFileCaption = "File Exists";
         public const string OverwriteFileMessage = "The file Contacts.xlsx already exists in the selected directory.Do you want to overwrite it?";
 
-        /* Connection Strings for an easy access */
-        public const string ExcelFilePathOne = @"C:\Users\Ivan Marinov\Desktop\Contacts.xlsx";
-        public const string ExcelFilePathTwo = @"C:\Users\Marinov\Desktop\Contacts.xlsx";
     }
 }

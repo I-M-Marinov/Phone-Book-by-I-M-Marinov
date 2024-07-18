@@ -6,18 +6,20 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Phone_Book_by_I_M_Marinov.Methods
 {
     public class ExcelControlMethods
     {
 
-        private string _excelFilePath = ExcelValidation.ExcelFilePathOne;
+        private readonly string _excelFilePath = Properties.Settings.Default.ExcelFilePath;
+
         public DataTable ContactsTable = new();
         public SortedList<string, bool> ContactsSortedList = new();
         private readonly PhoneBook _phoneBook;
 
-
+        // excelFilePath = ExcelValidation.ExcelFilePathTwo;
 
         public ExcelControlMethods(PhoneBook phoneBook)
         {
@@ -70,38 +72,8 @@ namespace Phone_Book_by_I_M_Marinov.Methods
     {
         if (File.Exists(_excelFilePath))
         {
-            using (ExcelPackage package = new ExcelPackage(new FileInfo(_excelFilePath)))
-            {
-                ExcelWorksheet worksheet = package.Workbook.Worksheets["Contacts"];
+        
 
-                if (ContactsTable.Rows.Count > 0)
-                {
-                    if (worksheet.Dimension?.Rows > 1 && worksheet.Dimension?.Columns > 0)
-                    {
-                        worksheet.Cells["A2:D" + worksheet.Dimension.End.Row].Clear();
-                    }
-
-                    int rowIndex = 2;
-                    foreach (DataRow row in ContactsTable.Rows)
-                    {
-                        if (row.RowState != DataRowState.Deleted)
-                        {
-                            worksheet.Cells[rowIndex, 1].Value = row["First Name"];
-                            worksheet.Cells[rowIndex, 2].Value = row["Last Name"];
-                            worksheet.Cells[rowIndex, 3].Value = row["Phone Number"];
-                            worksheet.Cells[rowIndex, 4].Value = row["Email"];
-                            rowIndex++;
-                        }
-                    }
-                }
-
-                if (ContactsTable.Rows.Count == 0)
-                {
-                    worksheet.Cells["A2:D" + worksheet.Dimension.End.Row].Clear();
-                }
-
-                package.Save();
-            }
         }
     }
         private bool ValidateFilePath()
@@ -129,7 +101,12 @@ namespace Phone_Book_by_I_M_Marinov.Methods
 
             if (saveFileDialog.ShowDialog() == DialogResult.OK)
             {
-                _excelFilePath = saveFileDialog.FileName;
+                string newFilePath = saveFileDialog.FileName;
+
+               File.Move(_excelFilePath, newFilePath);
+                Properties.Settings.Default.ExcelFilePath = newFilePath; // save the new filepath
+                Properties.Settings.Default.Save(); // Save the settings
+
             }
         }
         public void AddNewContactAndSave()

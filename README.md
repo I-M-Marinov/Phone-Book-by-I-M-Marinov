@@ -1,5 +1,6 @@
 # Phone-Book-by-I-M-Marinov
-[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2FI-M-Marinov%2FPhone-Book-by-I-M-Marinov&count_bg=%230098ED&title_bg=%23292727&icon=iconify.svg&icon_color=%23E7E7E7&title=views&edge_flat=false)](https://hits.seeyoufarm.com)
+![Repository Views](https://komarev.com/ghpvc/?username=I-M-Marinov&repo=LoadVantage-Project&color=blueviolet&style=for-the-badge&label=Project+Views&base=100)
+
 
 ## Description:
 
